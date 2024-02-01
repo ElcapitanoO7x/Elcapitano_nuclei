@@ -1,0 +1,24 @@
+metadata:
+    language: v1-beta
+    name: "Check for reveal.js affected files for Postmessage XSS"
+    description: "Postmessage XSS"
+      tags: "xss"
+    author: "xelkomy"
+
+run for each:
+    potential_path =
+            "/plugin/notes/notes.html",
+            "/plugin/notes/speaker-view.html"
+       
+given host then
+    send request called check:
+        method: "GET"
+        path: {potential_path}
+        
+    if "reveal.js - Slide Notes" in {check.response.body} or "reveal.js - Speaker View" in {check.response.body} then
+        report issue:
+            severity: medium
+            confidence: firm
+            detail: `Found Potential Postmessage XSS at {potential_path}.`
+            remediation: "https://security.snyk.io/vuln/SNYK-JS-REVEALJS-2414032"
+    end if
